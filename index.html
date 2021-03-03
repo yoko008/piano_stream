@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<script src="js/music/xiao_xing_xing.js"></script>
+<script type="text/javascript">
+
+    var config = {
+        type: Phaser.AUTO,
+        width: "100%",
+        height: "100%",
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: {y: 0},
+                debug: false
+            }
+        },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+
+    var keyStart = 0;
+    var keyEnd = 52;
+
+    var keyCount = 52;
+    var realKeyCount = keyEnd - keyStart;
+
+    var keyWidth = window.innerWidth / (keyEnd - keyStart);
+    var keyHeight = 60;
+
+    var scaleX = keyWidth / 60;
+    var scaleY;
+
+
+    var platforms;
+    var starts;
+    var text;
+    var game = new Phaser.Game(config);
+
+    function preload() {
+        this.load.image('w-key', 'assets/w-key.png');
+    }
+
+    function create() {
+        //画竖线
+        var graphics = this.add.graphics({lineStyle: {width: 1, color: 0x161616}});
+        var graphics2 = this.add.graphics({lineStyle: {width: 2, color: 0x333333}});
+        for (var i = keyStart; i < keyEnd; i++) {
+            var line = new Phaser.Geom.Line((i - keyStart) * keyWidth, 0, (i - keyStart) * keyWidth, window.innerHeight);
+            if ((i - 2) % 7 == 0) {
+                graphics2.strokeLineShape(line);
+            } else {
+                graphics.strokeLineShape(line);
+            }
+        }
+        //画方块
+        var block = this.physics.add.group();
+        var section;
+        var note;
+        var x;
+        var y;
+        for (var i = 0; i < yinfu.rightNotes.length; i++) {
+            note = yinfu.rightNotes[i].note;
+            section = yinfu.rightNotes[i].section;
+            for (var j = 0; j < note.length; j++) {
+                x = (note[j].area * 7 + note[j].musicalAlphabet - 6 - keyStart) * keyWidth;
+                y = (section * yinfu.beatInSection + note[j].startBeat)  * -60 - (((1 * 4 / note[j].length) - 1) * 60);
+                block.create(x, y, 'w-key').setOrigin(0, 0).setScale(scaleX, 1 * 4 / note[j].length);
+            }
+        }
+        for (var i = 0; i < yinfu.leftNotes.length; i++) {
+            note = yinfu.leftNotes[i].note;
+            section = yinfu.leftNotes[i].section;
+            for (var j = 0; j < note.length; j++) {
+                x = (note[j].area * 7 + note[j].musicalAlphabet - 6 - keyStart) * keyWidth;
+                y = (section * yinfu.beatInSection + note[j].startBeat)  * -60 - (((1 * 4 / note[j].length) - 1) * 60);
+                block.create(x, y, 'w-key').setOrigin(0, 0).setScale(scaleX, 1 * 4 / note[j].length);
+            }
+        }
+        block.setVelocityY(100);
+    }
+
+    function update() {
+
+    }
+
+</script>
+</body>
+</html>
